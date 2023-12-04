@@ -25,11 +25,6 @@ class HomePage extends StatelessWidget {
       future: _loadTexFile(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text('Error loading TeX file.'),
-            );
-          }
           return TeXView(
             child: TeXViewColumn(
               style: const TeXViewStyle(textAlign: TeXViewTextAlign.center),
@@ -40,9 +35,17 @@ class HomePage extends StatelessWidget {
             ),
             style: LatexStyle.style(),
           );
-        } else {
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error loading TeX file: ${snapshot.error}'),
+          );
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(),
+          );
+        } else {
+          return const Center(
+            child: Text('Unexpected error loading TeX file.'),
           );
         }
       },
