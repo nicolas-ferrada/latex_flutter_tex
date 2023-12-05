@@ -6,70 +6,62 @@ import 'package:latex_in_flutter/latex_style.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  Future<String> _loadTexFile() async {
-    return await rootBundle.loadString('assets/latex-file.tex');
+  final String errorMessage = 'Latex file has no data';
+
+  Future<String?> _loadLatex1() async {
+    return await rootBundle.loadString('assets/latex/latex1.tex');
+  }
+
+  Future<String?> _loadLatex2() async {
+    return await rootBundle.loadString('assets/latex/latex2.tex');
+  }
+
+  Future<String?> _loadLatex3() async {
+    return await rootBundle.loadString('assets/latex/latex3.tex');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("TeXViewDocument"),
+        centerTitle: true,
+        title: const Text("Latex in Flutter"),
       ),
-      body: loadLatex(),
+      body: body(),
     );
   }
 
-  FutureBuilder<String> loadLatex() {
+  Widget body() {
     return FutureBuilder(
-      future: _loadTexFile(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
+        future: Future.wait([
+          _loadLatex1(),
+          _loadLatex2(),
+          _loadLatex3(),
+        ]),
+        builder: (context, snapshot) {
+          String latex1 = snapshot.data?[0] ?? errorMessage;
+          String latex2 = snapshot.data?[1] ?? errorMessage;
+          String latex3 = snapshot.data?[2] ?? errorMessage;
+
           return TeXView(
             child: TeXViewColumn(
-              style: const TeXViewStyle(textAlign: TeXViewTextAlign.center),
               children: [
-                inWidgetLatexDocument(),
-                fromAssetsLatexDocument(snapshot.data ?? ''),
+                latexFile(latex1),
+                latexFile(latex2),
+                latexFile(latex3),
               ],
             ),
-            style: LatexStyle.style(),
           );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error loading TeX file: ${snapshot.error}'),
-          );
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
-          return const Center(
-            child: Text('Unexpected error loading TeX file.'),
-          );
-        }
-      },
-    );
+        });
   }
 
-  TeXViewDocument inWidgetLatexDocument() {
-    return const TeXViewDocument(
-      r'''$$
-      \begin{bmatrix}
-       a & b
-       \\
-       c & d
-       \end{bmatrix}
-       $$''',
-    );
-  }
-
-  TeXViewDocument fromAssetsLatexDocument(String latexFileContent) {
+  TeXViewDocument latexFile(String latexFileContent) {
     return TeXViewDocument(
       r''' ''' +
           latexFileContent +
           r'''
        ''',
+      style: LatexStyle.style(),
     );
   }
 }

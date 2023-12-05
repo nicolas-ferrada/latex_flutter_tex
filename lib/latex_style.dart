@@ -4,15 +4,13 @@ import 'package:flutter_tex/flutter_tex.dart';
 class LatexStyle {
   static TeXViewStyle style() {
     return const TeXViewStyle(
-      margin: TeXViewMargin.all(4),
-      borderRadius: TeXViewBorderRadius.all(15),
-      width: 250,
+      margin: TeXViewMargin.all(10),
       textAlign: TeXViewTextAlign.center,
-      backgroundColor: Colors.greenAccent,
+      backgroundColor: Colors.grey,
       border: TeXViewBorder.all(
         TeXViewBorderDecoration(
-          borderColor: Colors.grey,
-          borderWidth: 5,
+          borderColor: Colors.black,
+          borderWidth: 1,
         ),
       ),
     );
